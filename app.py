@@ -1,5 +1,4 @@
 import gradio as gr
-from PIL import Image  
 from gradio_client import Client
 
 import json
