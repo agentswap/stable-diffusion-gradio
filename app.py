@@ -352,4 +352,7 @@ Despite how impressive being able to turn text into image is, beware to the fact
             )
         
 
-block.queue(concurrency_count=80, max_size=100).launch(max_threads=150)
+# block.queue(concurrency_count=80, max_size=100).launch(max_threads=150)
+CUSTOM_PATH = os.getenv('CUSTOM_PATH')
+app = FastAPI()
+app = gr.mount_gradio_app(app, block, path=CUSTOM_PATH)
