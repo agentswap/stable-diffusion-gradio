@@ -1,5 +1,4 @@
 import gradio as gr
-from datasets import load_dataset
 from PIL import Image  
 from gradio_client import Client
 
