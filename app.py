@@ -6,6 +6,7 @@ import re
 import os
 import base64
 import requests
+from fastapi import FastAPI
 
 from share_btn import community_icon_html, loading_icon_html, share_js
 
