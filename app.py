@@ -6,6 +6,7 @@ from gradio_client import Client
 import json
 import re
 import os
+import base64
 import requests
 
 from share_btn import community_icon_html, loading_icon_html, share_js
@@ -19,10 +20,17 @@ def process_text(text):
 
 def infer(prompt, negative, scale):
     client = Client('https://stabilityai-stable-diffusion.hf.space/')
-    # print(client.view_api())
-    with open(client.predict(prompt, negative, scale, fn_index=0)) as f: 
-        text = process_text(f.read())
-        return json.loads(text)[0]
+    path = client(prompt, negative, scale, fn_index=1)
+    images = []
+
+    image_files = [f for f in os.listdir(path) if f.endswith('.jpg')]
+    for image_file in image_files:
+        with open(os.path.join(path, image_file), 'rb') as f:
+            image_data = f.read()
+            image_b64 = f"data:image/jpeg;base64,{base64.b64encode(image_data).decode('utf-8')}"
+            images.append(image_b64)
+
+    return images
 
 
     
