@@ -19,7 +19,7 @@ def process_text(text):
 
 def infer(prompt, negative, scale):
     client = Client('https://stabilityai-stable-diffusion.hf.space/')
-    path = client(prompt, negative, scale, fn_index=1)
+    path = client.predict(prompt, negative, scale, fn_index=1)
     images = []
 
     image_files = [f for f in os.listdir(path) if f.endswith('.jpg')]
