@@ -1,32 +1,30 @@
 import gradio as gr
 from datasets import load_dataset
 from PIL import Image  
+from gradio_client import Client
 
+import json
 import re
 import os
 import requests
 
 from share_btn import community_icon_html, loading_icon_html, share_js
 
-word_list_dataset = load_dataset("stabilityai/word-list", data_files="list.txt", use_auth_token=True)
-word_list = word_list_dataset["train"]['text']
-
 is_gpu_busy = False
+
+def process_text(text):
+    text = text.encode('raw_unicode_escape').decode('unicode-escape').encode('utf-16_BE','surrogatepass').decode('utf-16_BE')
+    text = text.replace('\n', '')  # JSON doesn't accept \n
+    return text
+
 def infer(prompt, negative, scale):
-    global is_gpu_busy
-    for filter in word_list:
-        if re.search(rf"\b{filter}\b", prompt):
-            raise gr.Error("Unsafe content found. Please try again with different prompts.")
-        
-    images = []
-    url = os.getenv('JAX_BACKEND_URL')
-    payload = {'prompt': prompt, 'negative_prompt': negative, 'guidance_scale': scale}
-    images_request = requests.post(url, json = payload)
-    for image in images_request.json()["images"]:
-        image_b64 = (f"data:image/jpeg;base64,{image}")
-        images.append(image_b64)
-    
-    return images
+    client = Client('https://stabilityai-stable-diffusion.hf.space/')
+    # print(client.view_api())
+    with open(client.predict(prompt, negative, scale, fn_index=0)) as f: 
+        text = process_text(f.read())
+        return json.loads(text)[0]
+
+
     
     
 css = """
